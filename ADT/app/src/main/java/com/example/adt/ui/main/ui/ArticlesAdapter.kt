@@ -26,6 +26,7 @@ class ArticlesAdapter(val onClick: (Int) -> Unit): ListAdapter<Article, Articles
             Glide.with(containerView.context)
                 .load(item.urlToImage)
                 .centerCrop()
+                .error(R.drawable.ic_launcher_background)
                 .into(containerView.article_image)
         }
     }
