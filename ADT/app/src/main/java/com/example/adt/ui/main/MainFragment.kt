@@ -22,7 +22,7 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private val adapter = ArticlesAdapter(::onItemClick)
-    lateinit var gridLayoutManager: GridLayoutManager
+    private var isGrid = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,15 +43,33 @@ class MainFragment : Fragment() {
         viewModel.getArticles()
     }
 
+    private fun changeOrientation() {
+        if(isGrid) {
+            article_list.layoutManager = GridLayoutManager(activity, 2)
+        } else {
+            article_list.layoutManager = LinearLayoutManager(
+                activity,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
+        }
+    }
+
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.vertical ->  { }
+            R.id.vertical ->  {
+                isGrid = false
+                changeOrientation()
+            }
 
             R.id.grid -> {
+                isGrid = true
+                changeOrientation()
             }
         }
         return false
