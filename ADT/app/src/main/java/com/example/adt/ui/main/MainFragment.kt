@@ -1,6 +1,7 @@
 package com.example.adt.ui.main
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -24,10 +25,6 @@ class MainFragment : Fragment() {
     private val adapter = ArticlesAdapter(::onItemClick)
     private var isGrid = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true);
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,16 +32,19 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.main_fragment, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         initViews()
         observeData()
-        viewModel.getArticles()
     }
 
-    private fun changeOrientation() {
-        if(isGrid) {
+    private fun initViews() {
+        swiperefresh.setOnRefreshListener {
+            viewModel.refresh()
+        }
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             article_list.layoutManager = GridLayoutManager(activity, 2)
         } else {
             article_list.layoutManager = LinearLayoutManager(
@@ -53,44 +53,6 @@ class MainFragment : Fragment() {
                 false
             )
         }
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
-            R.id.vertical ->  {
-                isGrid = false
-                changeOrientation()
-            }
-
-            R.id.grid -> {
-                isGrid = true
-                changeOrientation()
-            }
-        }
-        return false
-    }
-
-
-    private fun initViews() {
-        swiperefresh.setOnRefreshListener {
-            viewModel.getArticles()
-        }
-
-        //to display grid layout
-        //gridLayoutManager =  GridLayoutManager(activity, 2)
-        //layoutManager = gridLayoutManager
-
-        article_list.layoutManager = LinearLayoutManager(
-            activity,
-            LinearLayoutManager.VERTICAL,
-            false
-        )
-
         article_list.setHasFixedSize(true)
         article_list.adapter = adapter
     }

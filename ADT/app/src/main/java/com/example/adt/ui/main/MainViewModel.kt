@@ -17,7 +17,11 @@ class MainViewModel : ViewModel() {
     private val _stateResponse = MutableLiveData<StateResponse<List<Article>>>()
     val stateResponse = _stateResponse
 
-    fun getArticles() {
+    init {
+        getArticles()
+    }
+
+    private fun getArticles() {
         _stateResponse.postValue(StateResponse.Loading())
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -30,5 +34,9 @@ class MainViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun refresh() {
+        getArticles()
     }
 }
